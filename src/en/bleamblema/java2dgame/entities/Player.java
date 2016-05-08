@@ -38,6 +38,7 @@ public class Player extends Mob {
 		else{
 			isMoving = false;
 		}
+		this.scale = 1;
 	}
 
 	public void render(Screen screen) {
@@ -49,11 +50,11 @@ public class Player extends Mob {
 		int yOffset = y - modifier/2 - 4;
 		
 		//head
-		screen.render(xOffset 			, yOffset			, xTile + yTile*32		, colour);
-		screen.render(xOffset + modifier, yOffset			, (xTile+1) + yTile*32	, colour);
+		screen.render(xOffset 			, yOffset			, xTile + yTile*32		, colour, 0x00, scale);
+		screen.render(xOffset + modifier, yOffset			, (xTile+1) + yTile*32	, colour, 0x00, scale);
 		//body
-		screen.render(xOffset 			, yOffset + modifier, xTile + (yTile+1)*32	, colour);
-		screen.render(xOffset + modifier, yOffset + modifier, (xTile+1) + (yTile+1)*32, colour);
+		screen.render(xOffset 			, yOffset + modifier, xTile + (yTile+1)*32	, colour, 0x00, scale);
+		screen.render(xOffset + modifier, yOffset + modifier, (xTile+1) + (yTile+1)*32, colour, 0x00, scale);
 		
 		
 	}

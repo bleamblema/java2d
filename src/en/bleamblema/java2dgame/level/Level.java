@@ -27,11 +27,12 @@ public class Level {
 		// generate data
 		for (int y = 0; y < this.height; y++) {
 			for (int x = 0; x < this.width; x++) {
-				if( x * y % 10 < 5){
+//				if( x * y % 10 < 5){
+//					tiles[x+y*this.width] = Tile.GRASS.getId();
+//				}else{
+//					tiles[x+y*this.width] = Tile.STONE.getId();
+//				}
 					tiles[x+y*this.width] = Tile.GRASS.getId();
-				}else{
-					tiles[x+y*this.width] = Tile.STONE.getId();
-				}
 			}
 		}	
 	}
