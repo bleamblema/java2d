@@ -14,6 +14,7 @@ import en.bleamblema.java2dgame.gfx.Colours;
 import en.bleamblema.java2dgame.gfx.Font;
 import en.bleamblema.java2dgame.gfx.Screen;
 import en.bleamblema.java2dgame.gfx.SpriteSheet;
+import en.bleamblema.java2dgame.level.Level;
 
 public class Game extends Canvas implements Runnable {
 
@@ -28,14 +29,18 @@ public class Game extends Canvas implements Runnable {
 	public boolean running = false;
 	public int tickCount = 0;
 
-	private BufferedImage image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
-	private int[] pixels = ((DataBufferInt) image.getRaster().getDataBuffer()) .getData();
+	private BufferedImage image = new BufferedImage(WIDTH, HEIGHT,
+			BufferedImage.TYPE_INT_RGB);
+	private int[] pixels = ((DataBufferInt) image.getRaster().getDataBuffer())
+			.getData();
 	private int[] colours = new int[6 * 6 * 6]; // R=6 G=6 b=6
 
 	// private SpriteSheet spriteSheet = new SpriteSheet("/sprite_sheet.png");
 	private Screen screen;
 
 	public InputHandler input;
+
+	public Level level;
 
 	public Game() {
 		setMinimumSize(new Dimension(WIDTH * SCALE, HEIGHT * SCALE));
@@ -70,6 +75,7 @@ public class Game extends Canvas implements Runnable {
 
 		screen = new Screen(WIDTH, HEIGHT, new SpriteSheet("/sprite_sheet.png"));
 		input = new InputHandler(this);
+		level = new Level(64, 64);
 	}
 
 	private synchronized void start() {
@@ -120,7 +126,8 @@ public class Game extends Canvas implements Runnable {
 
 			if (System.currentTimeMillis() - lastTimer >= 1000) {
 				lastTimer += 1000;
-				// System.out.println(frames+ " frames" + "," + ticks + // " ticks");
+				// System.out.println(frames+ " frames" + "," + ticks +
+				// " ticks");
 				frames = 0;
 				ticks = 0;
 			}
@@ -128,21 +135,23 @@ public class Game extends Canvas implements Runnable {
 		}
 	}
 
+	private int x = 0, y = 0;
+
 	public void tick() {
 		tickCount++;
 		if (input.up.isPressed()) {
-			screen.yOffset++;
+			y--;
 		}
 		if (input.down.isPressed()) {
-			screen.yOffset--;
+			y++;
 		}
 		if (input.left.isPressed()) {
-			screen.xOffset--;
+			x--;
 		}
 		if (input.right.isPressed()) {
-			screen.xOffset++;
+			x++;
 		}
-		// screen.yOffset++;
+		level.tick();
 	}
 
 	public void render() {
@@ -152,25 +161,27 @@ public class Game extends Canvas implements Runnable {
 			return;
 		}
 
-		for (int y = 0; y < 32; y++) {
-			for (int x = 0; x < 32; x++) {
-				screen.render(x << 3, y << 3, 0, Colours.get(555, 500, 050, 005), false, false);
+		int xOffset = x - (screen.width / 2);
+		int yOffset = y - (screen.height / 2);
+
+		level.renderTiles(screen, xOffset, yOffset);
+
+		for (int x = 0; x < level.width; x++) {
+			int colour = Colours.get(-1, -1, -1, 000);
+			if (x % 10 == 0 && x != 0) {
+				colour = Colours.get(-1, -1, -1, 500);
 			}
-		}	
-		
-		String msg = "This is our game!";
-        Font.render(msg, screen,
-                        screen.xOffset + screen.width / 2 - (msg.length() * 8 / 2),
-                        screen.yOffset + screen.height / 2,
-                        Colours.get(-1, -1, -1, 000));
+			Font.render((x % 10) + "", screen, 0 + x * 8, 0, colour);
+		}
 
 		for (int y = 0; y < screen.height; y++) {
 			for (int x = 0; x < screen.width; x++) {
-				int colourCode = screen.pixels[x+y*screen.width];
-				if(colourCode < 255) pixels[x+y*WIDTH] = colours[colourCode];
+				int colourCode = screen.pixels[x + y * screen.width];
+				if (colourCode < 255)
+					pixels[x + y * WIDTH] = colours[colourCode];
 
 			}
-		}	
+		}
 
 		Graphics g = bs.getDrawGraphics();
 		g.drawImage(image, 0, 0, getWidth(), getHeight(), null);
