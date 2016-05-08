@@ -1,5 +1,6 @@
 package en.bleamblema.java2dgame.gfx;
 
+
 public class Screen {
 	public static final int MAP_WIDTH = 64;
 	public static final int MAP_WIDTH_MASK = MAP_WIDTH - 1;
@@ -36,6 +37,7 @@ public class Screen {
 				yMin = 0;
 			if (yMax > height)
 				yMax = height;
+			
 
 			for (int xTile = xOffset >> 3; xTile <= (xOffset + width) >> 3; xTile++) {
 				int xMin = xTile * 8 - xOffset;
@@ -59,7 +61,6 @@ public class Screen {
 					}
 
 				}
-
 			}
 		}
 	}
