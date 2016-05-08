@@ -10,6 +10,7 @@ import java.awt.image.DataBufferInt;
 
 import javax.swing.JFrame;
 
+import en.bleamblema.java2dgame.gfx.Colours;
 import en.bleamblema.java2dgame.gfx.Screen;
 import en.bleamblema.java2dgame.gfx.SpriteSheet;
 
@@ -26,16 +27,15 @@ public class Game extends Canvas implements Runnable {
 	public boolean running = false;
 	public int tickCount = 0;
 
-	private BufferedImage image = new BufferedImage(WIDTH, HEIGHT,
-			BufferedImage.TYPE_INT_RGB);
-	private int[] pixels = ((DataBufferInt) image.getRaster().getDataBuffer())
-			.getData();
+	private BufferedImage image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+	private int[] pixels = ((DataBufferInt) image.getRaster().getDataBuffer()) .getData();
+	private int[] colours = new int[6 * 6 * 6]; // R=6 G=6 b=6
 
 	// private SpriteSheet spriteSheet = new SpriteSheet("/sprite_sheet.png");
 	private Screen screen;
 
 	public InputHandler input;
-	
+
 	public Game() {
 		setMinimumSize(new Dimension(WIDTH * SCALE, HEIGHT * SCALE));
 		setMaximumSize(new Dimension(WIDTH * SCALE, HEIGHT * SCALE));
@@ -53,6 +53,20 @@ public class Game extends Canvas implements Runnable {
 	}
 
 	public void init() {
+		int index = 0;
+		for (int r = 0; r < 6; r++) {
+			for (int g = 0; g < 6; g++) {
+				for (int b = 0; b < 6; b++) {
+					int rr = (r * (255 / 5));
+					int gg = (g * (255 / 5));
+					int bb = (b * (255 / 5));
+
+					colours[index++] = rr << 16 | gg << 8 | bb;
+
+				}
+			}
+		}
+
 		screen = new Screen(WIDTH, HEIGHT, new SpriteSheet("/sprite_sheet.png"));
 		input = new InputHandler(this);
 	}
@@ -105,8 +119,7 @@ public class Game extends Canvas implements Runnable {
 
 			if (System.currentTimeMillis() - lastTimer >= 1000) {
 				lastTimer += 1000;
-				// System.out.println(frames+ " frames" + "," + ticks +
-				// " ticks");
+				// System.out.println(frames+ " frames" + "," + ticks + // " ticks");
 				frames = 0;
 				ticks = 0;
 			}
@@ -116,10 +129,18 @@ public class Game extends Canvas implements Runnable {
 
 	public void tick() {
 		tickCount++;
-		if(input.up.isPressed()){ screen.yOffset++; }
-		if(input.down.isPressed()){ screen.yOffset--; }
-		if(input.left.isPressed()){ screen.xOffset--; }
-		if(input.right.isPressed()){ screen.xOffset++; }
+		if (input.up.isPressed()) {
+			screen.yOffset++;
+		}
+		if (input.down.isPressed()) {
+			screen.yOffset--;
+		}
+		if (input.left.isPressed()) {
+			screen.xOffset--;
+		}
+		if (input.right.isPressed()) {
+			screen.xOffset++;
+		}
 		// screen.yOffset++;
 	}
 
@@ -130,12 +151,22 @@ public class Game extends Canvas implements Runnable {
 			return;
 		}
 
-		screen.render(pixels, 0, WIDTH);
+		for (int y = 0; y < 32; y++) {
+			for (int x = 0; x < 32; x++) {
+				screen.render(x << 3, y << 3, 0, Colours.get(555, 500, 050, 005));
+			}
+		}	
+
+		for (int y = 0; y < screen.height; y++) {
+			for (int x = 0; x < screen.width; x++) {
+				int colourCode = screen.pixels[x+y*screen.width];
+				if(colourCode < 255) pixels[x+y*WIDTH] = colours[colourCode];
+
+			}
+		}	
 
 		Graphics g = bs.getDrawGraphics();
-
 		g.drawImage(image, 0, 0, getWidth(), getHeight(), null);
-
 		g.dispose();
 		bs.show();
 
