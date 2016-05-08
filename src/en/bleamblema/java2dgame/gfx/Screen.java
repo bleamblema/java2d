@@ -3,6 +3,9 @@ package en.bleamblema.java2dgame.gfx;
 public class Screen {
 	public static final int MAP_WIDTH = 64;
 	public static final int MAP_WIDTH_MASK = MAP_WIDTH - 1;
+	
+	public static final byte BIT_MIRROR_X = 0x01;
+	public static final byte BIT_MIRROR_Y = 0x02;
 
 	public int[] pixels;
 
@@ -25,15 +28,18 @@ public class Screen {
 	
 	
 	public void render(int xPos, int yPos, int tile, int colour) {
-		render(xPos, yPos, tile, colour, false, false);
+		render(xPos, yPos, tile, colour, 0x00);
 	}
 
-	public void render(int xPos, int yPos, int tile, int colour, boolean mirrorX, boolean mirrorY) {
+	public void render(int xPos, int yPos, int tile, int colour, int mirrorDir) {
 		xPos -= xOffset;
 		yPos -= yOffset;
 
 		int xTile = tile % 32;
 		int yTile = tile / 32;
+		
+		boolean mirrorX = (( mirrorDir & BIT_MIRROR_X ) > 0);
+		boolean mirrorY = (( mirrorDir & BIT_MIRROR_Y ) > 0);
 
 		//int tileOffset = (xTile / 8) + (yTile / 8) * sheet.width; // in pixel
 		int tileOffset = (xTile << 3) + (yTile << 3) * sheet.width;
