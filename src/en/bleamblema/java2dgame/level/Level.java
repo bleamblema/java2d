@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import en.bleamblema.java2dgame.entities.Entity;
-import en.bleamblema.java2dgame.entities.Player;
 import en.bleamblema.java2dgame.gfx.Screen;
 import en.bleamblema.java2dgame.tiles.Tile;
 
@@ -27,12 +26,11 @@ public class Level {
 		// generate data
 		for (int y = 0; y < this.height; y++) {
 			for (int x = 0; x < this.width; x++) {
-//				if( x * y % 10 < 5){
-//					tiles[x+y*this.width] = Tile.GRASS.getId();
-//				}else{
-//					tiles[x+y*this.width] = Tile.STONE.getId();
-//				}
+				if( x * y % 10 < 7){
 					tiles[x+y*this.width] = Tile.GRASS.getId();
+				}else{
+					tiles[x+y*this.width] = Tile.STONE.getId();
+				}
 			}
 		}	
 	}
@@ -69,9 +67,9 @@ public class Level {
 		}
 	}
 
-	private Tile getTile(int x, int y) {
-		if(x<0 || x>width|| y<0 || y>height) return Tile.VOID;
-		
+	public Tile getTile(int x, int y) {
+		if(x<0 || x>=width|| y<0 || y>=height) return Tile.VOID;
+	
 		return Tile.tiles[tiles[x+y*width]];
 	}
 

@@ -11,8 +11,6 @@ import java.awt.image.DataBufferInt;
 import javax.swing.JFrame;
 
 import en.bleamblema.java2dgame.entities.Player;
-import en.bleamblema.java2dgame.gfx.Colours;
-import en.bleamblema.java2dgame.gfx.Font;
 import en.bleamblema.java2dgame.gfx.Screen;
 import en.bleamblema.java2dgame.gfx.SpriteSheet;
 import en.bleamblema.java2dgame.level.Level;
