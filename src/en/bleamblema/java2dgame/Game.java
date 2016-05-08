@@ -10,7 +10,9 @@ import java.awt.image.DataBufferInt;
 
 import javax.swing.JFrame;
 
+import en.bleamblema.java2dgame.gfx.Screen;
 import en.bleamblema.java2dgame.gfx.SpriteSheet;
+
 
 public class Game extends Canvas implements Runnable{
 
@@ -28,7 +30,8 @@ public class Game extends Canvas implements Runnable{
 	private BufferedImage image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
 	private int[] pixels = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
 	
-	private SpriteSheet spriteSheet = new SpriteSheet("/sprite_sheet.png");
+	//private SpriteSheet spriteSheet = new SpriteSheet("/sprite_sheet.png");
+	private Screen screen;
 	
 	public Game() {
 		setMinimumSize(new Dimension(WIDTH*SCALE, HEIGHT*SCALE));
@@ -44,6 +47,10 @@ public class Game extends Canvas implements Runnable{
 		frame.setResizable(false);
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
+	}
+	
+	public void init() {
+		screen = new Screen(WIDTH, HEIGHT, new SpriteSheet("/sprite_sheet.png"));
 	}
 
 	private synchronized void start() {
@@ -63,6 +70,8 @@ public class Game extends Canvas implements Runnable{
 		
 		long lastTimer = System.currentTimeMillis();
 		double delta = 0;
+		
+		init();
 		
 		while(running){
 			long now = System.nanoTime();
@@ -92,7 +101,7 @@ public class Game extends Canvas implements Runnable{
 			
 			if(System.currentTimeMillis() - lastTimer >= 1000){
 				lastTimer += 1000;
-				System.out.println(frames+ " frames" + "," + ticks + " ticks");
+				//System.out.println(frames+ " frames" + "," + ticks + " ticks");
 				frames = 0;
 				ticks = 0;
 			}
@@ -102,10 +111,7 @@ public class Game extends Canvas implements Runnable{
 	
 	public void tick() {
 		tickCount++;
-		for(int i = 0; i < pixels.length; i++){
-			pixels[i] = i + tickCount;
-		}
-		
+		//screen.yOffset++;		
 	}
 	public void render() {
 		BufferStrategy bs = getBufferStrategy();
@@ -113,6 +119,9 @@ public class Game extends Canvas implements Runnable{
 			createBufferStrategy(3);
 			return;
 		}
+		
+		screen.render(pixels, 0, WIDTH);
+		
 		Graphics g = bs.getDrawGraphics();
 		
 		g.drawImage(image, 0, 0, getWidth(), getHeight(), null);
