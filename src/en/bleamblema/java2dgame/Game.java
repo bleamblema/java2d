@@ -11,6 +11,7 @@ import java.awt.image.DataBufferInt;
 import javax.swing.JFrame;
 
 import en.bleamblema.java2dgame.gfx.Colours;
+import en.bleamblema.java2dgame.gfx.Font;
 import en.bleamblema.java2dgame.gfx.Screen;
 import en.bleamblema.java2dgame.gfx.SpriteSheet;
 
@@ -156,6 +157,12 @@ public class Game extends Canvas implements Runnable {
 				screen.render(x << 3, y << 3, 0, Colours.get(555, 500, 050, 005), false, false);
 			}
 		}	
+		
+		String msg = "This is our game!";
+        Font.render(msg, screen,
+                        screen.xOffset + screen.width / 2 - (msg.length() * 8 / 2),
+                        screen.yOffset + screen.height / 2,
+                        Colours.get(-1, -1, -1, 000));
 
 		for (int y = 0; y < screen.height; y++) {
 			for (int x = 0; x < screen.width; x++) {
