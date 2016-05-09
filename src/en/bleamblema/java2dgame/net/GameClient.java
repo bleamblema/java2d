@@ -80,17 +80,21 @@ public class GameClient extends Thread {
 		System.out.println("[" + address.getHostAddress() + ":" + port + "] "
 				+ packet.getUsername() + " has has joined the game...");
 
-		PlayerMP player = new PlayerMP(game.level, packet.getX(), packet.getY(), packet.getUsername(), address, port);
+		PlayerMP player = new PlayerMP(game.level, packet.getX(),
+				packet.getY(), packet.getUsername(), address, port);
 		game.level.addEntity(player);
 	}
 
 	public void sendData(byte[] data) {
-		DatagramPacket packet = new DatagramPacket(data, data.length,
-				ipAddress, 1331);
-		try {
-			socket.send(packet);
-		} catch (IOException e) {
-			e.printStackTrace();
+		if (!game.isApplet) {
+
+			DatagramPacket packet = new DatagramPacket(data, data.length,
+					ipAddress, 1331);
+			try {
+				socket.send(packet);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 

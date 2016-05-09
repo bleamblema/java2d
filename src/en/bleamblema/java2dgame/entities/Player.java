@@ -44,8 +44,12 @@ public class Player extends Mob {
 		if (xa != 0 || ya != 0) {
 			move(xa, ya);
 			isMoving = true;
-			Packet02Move packet = new Packet02Move(this.getUsername(), this.x, this.y, this.numSteps, this.isMoving, this.movingDir);
-			packet.writeData(Game.game.socketClient);
+			if (!Game.game.isApplet) {
+				Packet02Move packet = new Packet02Move(this.getUsername(),
+						this.x, this.y, this.numSteps, this.isMoving,
+						this.movingDir);
+				packet.writeData(Game.game.socketClient);
+			}
 		} else {
 			isMoving = false;
 		}

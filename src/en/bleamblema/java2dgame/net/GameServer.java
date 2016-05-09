@@ -82,8 +82,8 @@ public class GameServer extends Thread {
 			break;
 		case MOVE:
 			packet = new Packet02Move(data);
-			this.handleMove(((Packet02Move)packet));
-			
+			this.handleMove(((Packet02Move) packet));
+
 			break;
 		}
 
@@ -114,7 +114,7 @@ public class GameServer extends Thread {
 
 	public void removeConnection(Packet01Disconnect packet) {
 		int index = getPlayerMPIndex(packet.getUsername());
-		if(index >= 0){
+		if (index >= 0) {
 			this.connectedPlayers.remove(index);
 			packet.writeData(this);
 		}
@@ -146,12 +146,14 @@ public class GameServer extends Thread {
 	}
 
 	public void sendData(byte[] data, InetAddress ipAddress, int port) {
-		DatagramPacket packet = new DatagramPacket(data, data.length,
-				ipAddress, port);
-		try {
-			socket.send(packet);
-		} catch (IOException e) {
-			e.printStackTrace();
+		if (!game.isApplet) {
+			DatagramPacket packet = new DatagramPacket(data, data.length,
+					ipAddress, port);
+			try {
+				socket.send(packet);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -161,9 +163,9 @@ public class GameServer extends Thread {
 		}
 	}
 
-	private void handleMove(Packet02Move packet){
-		if(getPlayerMP(packet.getUsername()) != null){
-			int index = getPlayerMPIndex(packet.getUsername()); 
+	private void handleMove(Packet02Move packet) {
+		if (getPlayerMP(packet.getUsername()) != null) {
+			int index = getPlayerMPIndex(packet.getUsername());
 			PlayerMP player = this.connectedPlayers.get(index);
 			player.x = packet.getX();
 			player.y = packet.getY();

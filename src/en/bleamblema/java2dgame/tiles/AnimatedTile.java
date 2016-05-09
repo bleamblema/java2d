@@ -1,7 +1,5 @@
 package en.bleamblema.java2dgame.tiles;
 
-import en.bleamblema.java2dgame.gfx.Screen;
-import en.bleamblema.java2dgame.level.Level;
 
 public class AnimatedTile extends BasicTile {
 
