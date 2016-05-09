@@ -13,6 +13,7 @@ import en.bleamblema.java2dgame.entities.PlayerMP;
 import en.bleamblema.java2dgame.net.packets.Packet;
 import en.bleamblema.java2dgame.net.packets.Packet.PacketTypes;
 import en.bleamblema.java2dgame.net.packets.Packet00Login;
+import en.bleamblema.java2dgame.net.packets.Packet01Disconnect;
 
 public class GameServer extends Thread {
 
@@ -38,7 +39,8 @@ public class GameServer extends Thread {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			this.parsePacket(packet.getData(), packet.getAddress(), packet.getPort());
+			this.parsePacket(packet.getData(), packet.getAddress(),
+					packet.getPort());
 
 			// String message = new String(packet.getData());
 			// System.out.println("CLIENT ["+
@@ -62,13 +64,20 @@ public class GameServer extends Thread {
 		case LOGIN:
 			packet = new Packet00Login(data);
 			System.out.println("[" + address.getHostAddress() + ":" + port
-					+ "] " + ((Packet00Login)packet).getUsername() + " has connected...");
+					+ "] " + ((Packet00Login) packet).getUsername()
+					+ " has connected...");
 
 			PlayerMP player = new PlayerMP(game.level, 100, 100,
-					((Packet00Login)packet).getUsername(), address, port);
-			this.addConnection(player, (Packet00Login)packet);
+					((Packet00Login) packet).getUsername(), address, port);
+			this.addConnection(player, (Packet00Login) packet);
 			break;
 		case DISCONNECT:
+			packet = new Packet01Disconnect(data);
+			System.out.println("[" + address.getHostAddress() + ":" + port
+					+ "] " + ((Packet01Disconnect) packet).getUsername()
+					+ " has left...");
+
+			this.removeConnection((Packet01Disconnect) packet);
 			break;
 		}
 
@@ -76,25 +85,58 @@ public class GameServer extends Thread {
 
 	public void addConnection(PlayerMP player, Packet00Login packet) {
 		boolean alreadyConnected = false;
-		for(PlayerMP p : this.connectedPlayers){
-			if(player.getUsername().equalsIgnoreCase(p.getUsername())){
-				if(p.ipAddress == null){
+		for (PlayerMP p : this.connectedPlayers) {
+			if (player.getUsername().equalsIgnoreCase(p.getUsername())) {
+				if (p.ipAddress == null) {
 					p.ipAddress = player.ipAddress;
 				}
-				if(p.port == -1){
+				if (p.port == -1) {
 					p.port = player.port;
 				}
 				alreadyConnected = true;
-			}else{
+			} else {
 				sendData(packet.getData(), p.ipAddress, p.port);
 				packet = new Packet00Login(p.getUsername());
 				sendData(packet.getData(), player.ipAddress, player.port);
 			}
 		}
-		
-		if(!alreadyConnected){
+
+		if (!alreadyConnected) {
 			this.connectedPlayers.add(player);
 		}
+	}
+
+	public void removeConnection(Packet01Disconnect packet) {
+		int index = getPlayerMPIndex(packet.getUsername());
+		if(index >= 0){
+			this.connectedPlayers.remove(index);
+			packet.writeData(this);
+		}
+	}
+
+	public PlayerMP getPlayerMP(String username) {
+		for (PlayerMP player : this.connectedPlayers) {
+			if (player.getUsername().equals(username)) {
+				return player;
+			}
+		}
+		return null;
+	}
+
+	public int getPlayerMPIndex(String username) {
+		int index = 0;
+		boolean found = false;
+		for (PlayerMP player : this.connectedPlayers) {
+			if (player.getUsername().equals(username)) {
+				found = true;
+				break;
+			}
+			index++;
+		}
+		if (found)
+			return index;
+		else
+			return -1;
 	}
 
 	public void sendData(byte[] data, InetAddress ipAddress, int port) {

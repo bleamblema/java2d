@@ -12,6 +12,7 @@ import en.bleamblema.java2dgame.entities.PlayerMP;
 import en.bleamblema.java2dgame.net.packets.Packet;
 import en.bleamblema.java2dgame.net.packets.Packet.PacketTypes;
 import en.bleamblema.java2dgame.net.packets.Packet00Login;
+import en.bleamblema.java2dgame.net.packets.Packet01Disconnect;
 
 public class GameClient extends Thread {
 
@@ -65,6 +66,11 @@ public class GameClient extends Thread {
 			game.level.addEntity(player);
 			break;
 		case DISCONNECT:
+			packet = new Packet01Disconnect(data);
+			System.out.println("[" + address.getHostAddress() + ":" + port
+					+ "] " + ((Packet01Disconnect) packet).getUsername()
+					+ " has left the world...");
+			game.level.removePlayerMP(((Packet01Disconnect)packet).getUsername());
 			break;
 		}
 

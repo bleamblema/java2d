@@ -9,6 +9,7 @@ import java.util.List;
 import javax.imageio.ImageIO;
 
 import en.bleamblema.java2dgame.entities.Entity;
+import en.bleamblema.java2dgame.entities.PlayerMP;
 import en.bleamblema.java2dgame.gfx.Screen;
 import en.bleamblema.java2dgame.tiles.Tile;
 
@@ -32,13 +33,13 @@ public class Level {
 			this.generateLevel();
 		}
 	}
-	
-	private void loadLevelFromFile(){
+
+	private void loadLevelFromFile() {
 		try {
 			this.image = ImageIO.read(Level.class.getResource(this.imagePath));
 			this.width = image.getWidth();
 			this.height = image.getHeight();
-			tiles = new byte[width*height];
+			tiles = new byte[width * height];
 			this.loadTiles();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -46,32 +47,35 @@ public class Level {
 	}
 
 	private void loadTiles() {
-		int[] tileColours = this.image.getRGB(0, 0, width, height, null, 0, width);
-		for(int y = 0; y < height ; y++){
-			for(int x = 0; x < width; x++){
-				for(Tile t : Tile.tiles){
-					if(t != null && t.getLevelColour() == tileColours[x+y*width]){
-						this.tiles[x+y*width] = t.getId();
+		int[] tileColours = this.image.getRGB(0, 0, width, height, null, 0,
+				width);
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
+				for (Tile t : Tile.tiles) {
+					if (t != null
+							&& t.getLevelColour() == tileColours[x + y * width]) {
+						this.tiles[x + y * width] = t.getId();
 					}
 				}
 			}
 		}
-		
-		
+
 	}
-	
-	private void saveLevelToFile(){
+
+	@SuppressWarnings("unused")
+	private void saveLevelToFile() {
 		try {
-			ImageIO.write(image, "png", new File(Level.class.getResource(this.imagePath).getFile()));
-			
+			ImageIO.write(image, "png",
+					new File(Level.class.getResource(this.imagePath).getFile()));
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 	}
-	
-	public void alterTile(int x, int y, Tile newTile){
-		this.tiles[x+y*width] = newTile.getId();
+
+	public void alterTile(int x, int y, Tile newTile) {
+		this.tiles[x + y * width] = newTile.getId();
 		image.setRGB(x, y, newTile.getLevelColour());
 	}
 
@@ -93,9 +97,9 @@ public class Level {
 		for (Entity e : entities) {
 			e.tick();
 		}
-		
-		for(Tile t: Tile.tiles){
-			if(t == null)
+
+		for (Tile t : Tile.tiles) {
+			if (t == null)
 				break;
 			t.tick();
 		}
@@ -114,8 +118,8 @@ public class Level {
 
 		screen.setOffset(xOffset, yOffset);
 
-		for (int y = yOffset>>3; y < ((yOffset+screen.height)>>3) + 1; y++) {
-			for (int x = (xOffset>>3); x < ((xOffset + screen.width)>>3) + 1; x++) {
+		for (int y = yOffset >> 3; y < ((yOffset + screen.height) >> 3) + 1; y++) {
+			for (int x = (xOffset >> 3); x < ((xOffset + screen.width) >> 3) + 1; x++) {
 				getTile(x, y).render(screen, this, x << 3, y << 3);
 			}
 		}
@@ -136,6 +140,21 @@ public class Level {
 
 	public void addEntity(Entity entity) {
 		this.entities.add(entity);
+	}
+
+	public void removePlayerMP(String username) {
+		int index = 0;
+		boolean found = false;
+		for (Entity e : this.entities) {
+			if (e instanceof PlayerMP
+					&& ((PlayerMP) e).getUsername().equals(username)) {
+				found = true;
+				break;
+			}
+			index++;
+		}
+		if (found)
+			this.entities.remove(index);
 	}
 
 }

@@ -29,7 +29,7 @@ public class Game extends Canvas implements Runnable {
 	public static final int SCALE = 3;
 	public static final String NAME = "Game";
 
-	private JFrame frame;
+	public JFrame frame;
 	public boolean running = false;
 	public int tickCount = 0;
 
@@ -43,13 +43,15 @@ public class Game extends Canvas implements Runnable {
 	private Screen screen;
 
 	public InputHandler input;
+	
+	public WindowHandler windowHandler;
 
 	public Level level;
 
 	public Player player;
 	
-	private GameClient socketClient;
-	private GameServer socketServer;
+	public GameClient socketClient;
+	public GameServer socketServer;
 	
 	public Game() {
 		setMinimumSize(new Dimension(WIDTH * SCALE, HEIGHT * SCALE));
@@ -84,6 +86,7 @@ public class Game extends Canvas implements Runnable {
 
 		screen = new Screen(WIDTH, HEIGHT, new SpriteSheet("/sprite_sheet.png"));
 		input = new InputHandler(this);
+		windowHandler = new WindowHandler(this);
 		level = new Level("/level/water_test_level.png");
 		player = new PlayerMP(level, 100, 100, input, JOptionPane.showInputDialog(this, "Please Enter a username"), null, -1);
 		level.addEntity(player);
