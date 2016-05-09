@@ -8,14 +8,18 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 
 import en.bleamblema.java2dgame.Game;
+import en.bleamblema.java2dgame.entities.PlayerMP;
+import en.bleamblema.java2dgame.net.packets.Packet;
+import en.bleamblema.java2dgame.net.packets.Packet.PacketTypes;
+import en.bleamblema.java2dgame.net.packets.Packet00Login;
 
-public class GameClient extends Thread{
-	
+public class GameClient extends Thread {
+
 	private InetAddress ipAddress;
 	private DatagramSocket socket;
 	private Game game;
-	
-	public GameClient(Game game, String ipAddress){
+
+	public GameClient(Game game, String ipAddress) {
 		this.game = game;
 		try {
 			this.socket = new DatagramSocket();
@@ -26,9 +30,9 @@ public class GameClient extends Thread{
 			e.printStackTrace();
 		}
 	}
-	
-	public void run(){
-		while(true){
+
+	public void run() {
+		while (true) {
 			byte[] data = new byte[1024];
 			DatagramPacket packet = new DatagramPacket(data, data.length);
 			try {
@@ -36,12 +40,39 @@ public class GameClient extends Thread{
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			System.out.println("Server > " + new String(packet.getData()));
+			this.parsePacket(packet.getData(), packet.getAddress(),
+					packet.getPort());
+			// System.out.println("Server > " + new String(packet.getData()));
 		}
 	}
-	
-	public void sendData(byte[] data){
-		DatagramPacket packet = new DatagramPacket(data, data.length, ipAddress, 1331);
+
+	private void parsePacket(byte[] data, InetAddress address, int port) {
+		String message = new String(data).trim();
+		PacketTypes type = Packet.lookupPacket(message.substring(0, 2));
+		Packet packet = null;
+		switch (type) {
+		default:
+		case INVALID:
+			break;
+		case LOGIN:
+			packet = new Packet00Login(data);
+			System.out.println("[" + address.getHostAddress() + ":" + port
+					+ "] " + ((Packet00Login) packet).getUsername()
+					+ " has has joined the game...");
+
+			PlayerMP player = new PlayerMP(game.level, 100, 100,
+					((Packet00Login) packet).getUsername(), address, port);
+			game.level.addEntity(player);
+			break;
+		case DISCONNECT:
+			break;
+		}
+
+	}
+
+	public void sendData(byte[] data) {
+		DatagramPacket packet = new DatagramPacket(data, data.length,
+				ipAddress, 1331);
 		try {
 			socket.send(packet);
 		} catch (IOException e) {

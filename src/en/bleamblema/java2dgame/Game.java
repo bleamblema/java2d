@@ -12,6 +12,7 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 import en.bleamblema.java2dgame.entities.Player;
+import en.bleamblema.java2dgame.entities.PlayerMP;
 import en.bleamblema.java2dgame.gfx.Screen;
 import en.bleamblema.java2dgame.gfx.SpriteSheet;
 import en.bleamblema.java2dgame.level.Level;
@@ -84,11 +85,13 @@ public class Game extends Canvas implements Runnable {
 		screen = new Screen(WIDTH, HEIGHT, new SpriteSheet("/sprite_sheet.png"));
 		input = new InputHandler(this);
 		level = new Level("/level/water_test_level.png");
-//		player = new Player(level, 0, 0, input, JOptionPane.showInputDialog(this, "Please Enter a username"));
-//		level.addEntity(player);
+		player = new PlayerMP(level, 100, 100, input, JOptionPane.showInputDialog(this, "Please Enter a username"), null, -1);
+		level.addEntity(player);
+		Packet00Login loginPacket = new Packet00Login(player.getUsername());
+		if(socketServer != null){
+			socketServer.addConnection((PlayerMP) player, loginPacket);
+		}
 //		socketClient.sendData("ping".getBytes());
-		
-		Packet00Login loginPacket = new Packet00Login( JOptionPane.showInputDialog(this, "Please Enter a username"));
 		loginPacket.writeData(socketClient);
 	}
 
