@@ -92,7 +92,7 @@ public class Game extends Canvas implements Runnable {
 		level = new Level("/level/water_test_level.png");
 		player = new PlayerMP(level, 100, 100, input, JOptionPane.showInputDialog(this, "Please Enter a username"), null, -1);
 		level.addEntity(player);
-		Packet00Login loginPacket = new Packet00Login(player.getUsername());
+		Packet00Login loginPacket = new Packet00Login(player.getUsername(), player.x, player.y);
 		if(socketServer != null){
 			socketServer.addConnection((PlayerMP) player, loginPacket);
 		}
