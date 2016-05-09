@@ -15,6 +15,8 @@ import en.bleamblema.java2dgame.entities.Player;
 import en.bleamblema.java2dgame.gfx.Screen;
 import en.bleamblema.java2dgame.gfx.SpriteSheet;
 import en.bleamblema.java2dgame.level.Level;
+import en.bleamblema.java2dgame.net.GameClient;
+import en.bleamblema.java2dgame.net.GameServer;
 
 public class Game extends Canvas implements Runnable {
 
@@ -43,6 +45,9 @@ public class Game extends Canvas implements Runnable {
 	public Level level;
 
 	public Player player;
+	
+	private GameClient socketClient;
+	private GameServer socketServer;
 	
 	public Game() {
 		setMinimumSize(new Dimension(WIDTH * SCALE, HEIGHT * SCALE));
@@ -80,11 +85,20 @@ public class Game extends Canvas implements Runnable {
 		level = new Level("/level/water_test_level.png");
 		player = new Player(level, 0, 0, input, JOptionPane.showInputDialog(this, "Please Enter a username"));
 		level.addEntity(player);
+		socketClient.sendData("ping".getBytes());
 	}
 
 	private synchronized void start() {
 		running = true;
 		new Thread(this).start();
+
+		if(JOptionPane.showConfirmDialog(this, "Do you want to run the server") == 0){
+			socketServer = new GameServer(this);
+			socketServer.start();
+		}
+		
+		socketClient = new GameClient(this, "localhost");
+		socketClient.start();
 
 	}
 
@@ -130,7 +144,7 @@ public class Game extends Canvas implements Runnable {
 
 			if (System.currentTimeMillis() - lastTimer >= 1000) {
 				lastTimer += 1000;
-				System.out.println(frames+ " frames" + "," + ticks + " ticks");
+				frame.setTitle(frames+ " frames" + "," + ticks + " ticks");
 				frames = 0;
 				ticks = 0;
 			}
