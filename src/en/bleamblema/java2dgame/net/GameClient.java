@@ -13,6 +13,7 @@ import en.bleamblema.java2dgame.net.packets.Packet;
 import en.bleamblema.java2dgame.net.packets.Packet.PacketTypes;
 import en.bleamblema.java2dgame.net.packets.Packet00Login;
 import en.bleamblema.java2dgame.net.packets.Packet01Disconnect;
+import en.bleamblema.java2dgame.net.packets.Packet02Move;
 
 public class GameClient extends Thread {
 
@@ -72,6 +73,10 @@ public class GameClient extends Thread {
 					+ " has left the world...");
 			game.level.removePlayerMP(((Packet01Disconnect)packet).getUsername());
 			break;
+		case MOVE:
+			packet = new Packet02Move(data);
+			handleMove((Packet02Move)packet);
+			break;
 		}
 
 	}
@@ -84,6 +89,10 @@ public class GameClient extends Thread {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	private void handleMove(Packet02Move packet) {
+		this.game.level.movePlayer(packet.getUsername(), packet.getX(), packet.getY());
 	}
 
 }

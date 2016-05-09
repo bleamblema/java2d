@@ -157,4 +157,20 @@ public class Level {
 			this.entities.remove(index);
 	}
 
+	private int getPlayerMPIndex(String username){
+		int index = 0;
+		for(Entity e : this.entities){
+			if(e instanceof PlayerMP && ((PlayerMP)e).getUsername().equals(username)){
+				break;
+			}
+			index++;
+		}
+		return index;
+	}
+	
+	public void movePlayer(String username, int x, int y){
+		int index = getPlayerMPIndex(username);
+		this.entities.get(index).x = x;
+		this.entities.get(index).y = y;
+	}
 }

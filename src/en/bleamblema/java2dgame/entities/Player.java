@@ -1,10 +1,12 @@
 package en.bleamblema.java2dgame.entities;
 
+import en.bleamblema.java2dgame.Game;
 import en.bleamblema.java2dgame.InputHandler;
 import en.bleamblema.java2dgame.gfx.Colours;
 import en.bleamblema.java2dgame.gfx.Font;
 import en.bleamblema.java2dgame.gfx.Screen;
 import en.bleamblema.java2dgame.level.Level;
+import en.bleamblema.java2dgame.net.packets.Packet02Move;
 
 public class Player extends Mob {
 
@@ -42,6 +44,8 @@ public class Player extends Mob {
 		if (xa != 0 || ya != 0) {
 			move(xa, ya);
 			isMoving = true;
+			Packet02Move packet = new Packet02Move(this.getUsername(), this.x, this.y);
+			packet.writeData(Game.game.socketClient);
 		} else {
 			isMoving = false;
 		}
