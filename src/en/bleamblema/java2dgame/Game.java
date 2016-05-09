@@ -9,6 +9,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
 import en.bleamblema.java2dgame.entities.Player;
 import en.bleamblema.java2dgame.gfx.Screen;
@@ -77,7 +78,7 @@ public class Game extends Canvas implements Runnable {
 		screen = new Screen(WIDTH, HEIGHT, new SpriteSheet("/sprite_sheet.png"));
 		input = new InputHandler(this);
 		level = new Level("/level/water_test_level.png");
-		player = new Player(level, 0, 0, input);
+		player = new Player(level, 0, 0, input, JOptionPane.showInputDialog(this, "Please Enter a username"));
 		level.addEntity(player);
 	}
 
@@ -129,8 +130,7 @@ public class Game extends Canvas implements Runnable {
 
 			if (System.currentTimeMillis() - lastTimer >= 1000) {
 				lastTimer += 1000;
-				// System.out.println(frames+ " frames" + "," + ticks +
-				// " ticks");
+				System.out.println(frames+ " frames" + "," + ticks + " ticks");
 				frames = 0;
 				ticks = 0;
 			}
