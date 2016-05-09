@@ -17,6 +17,7 @@ import en.bleamblema.java2dgame.gfx.SpriteSheet;
 import en.bleamblema.java2dgame.level.Level;
 import en.bleamblema.java2dgame.net.GameClient;
 import en.bleamblema.java2dgame.net.GameServer;
+import en.bleamblema.java2dgame.net.packets.Packet00Login;
 
 public class Game extends Canvas implements Runnable {
 
@@ -83,9 +84,12 @@ public class Game extends Canvas implements Runnable {
 		screen = new Screen(WIDTH, HEIGHT, new SpriteSheet("/sprite_sheet.png"));
 		input = new InputHandler(this);
 		level = new Level("/level/water_test_level.png");
-		player = new Player(level, 0, 0, input, JOptionPane.showInputDialog(this, "Please Enter a username"));
-		level.addEntity(player);
-		socketClient.sendData("ping".getBytes());
+//		player = new Player(level, 0, 0, input, JOptionPane.showInputDialog(this, "Please Enter a username"));
+//		level.addEntity(player);
+//		socketClient.sendData("ping".getBytes());
+		
+		Packet00Login loginPacket = new Packet00Login( JOptionPane.showInputDialog(this, "Please Enter a username"));
+		loginPacket.writeData(socketClient);
 	}
 
 	private synchronized void start() {
@@ -168,16 +172,13 @@ public class Game extends Canvas implements Runnable {
 		int yOffset = player.y - (screen.height / 2);
 
 		level.renderTiles(screen, xOffset, yOffset);
-
 		level.renderEntities(screen);
-		
 		
 		for (int y = 0; y < screen.height; y++) {
 			for (int x = 0; x < screen.width; x++) {
 				int colourCode = screen.pixels[x + y * screen.width];
 				if (colourCode < 255)
 					pixels[x + y * WIDTH] = colours[colourCode];
-
 			}
 		}
 
@@ -185,7 +186,6 @@ public class Game extends Canvas implements Runnable {
 		g.drawImage(image, 0, 0, getWidth(), getHeight(), null);
 		g.dispose();
 		bs.show();
-
 	}
 
 	public static void main(String[] args) {
